@@ -56,9 +56,15 @@ public class AppRunner {
 
     private void chooseAction(UniversalArray<Product> products) {
         print(" a - Пополнить баланс");
+        print(" p - Пополнить баланс с карты");
         showActions(products);
         print(" h - Выйти");
         String action = fromConsole().substring(0, 1);
+
+        if ("p".equalsIgnoreCase(action)) {
+            TopUpFromCard();
+        }
+
         if ("a".equalsIgnoreCase(action)) {
             coinAcceptor.setAmount(coinAcceptor.getAmount() + 10);
             print("Вы пополнили баланс на 10");
@@ -80,8 +86,43 @@ public class AppRunner {
                 chooseAction(products);
             }
         }
+    }
 
+    public void TopUpFromCard() {
+        BankCard bankCard = new BankCard();
 
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Введите 14 значный номер карты: ");
+        bankCard.setCardNumber(sc.nextLine());
+
+        long number = String.valueOf(bankCard.getCardNumber()).length();
+
+        if (number == 14) {
+            System.out.print("Введите 4 значный пороль:");
+            bankCard.setOnePassword(sc.nextInt());
+
+            int password = String.valueOf(bankCard.getOnePassword()).length();
+
+            if (password == 4) {
+                System.out.print("Все верно, напишите число для пополнения: ");
+                bankCard.setReplenishment(sc.nextInt());
+
+                if (bankCard.getReplenishment() < 0) {
+                    System.out.println("Сумма не должна быть меньше 0");
+                } else if (bankCard.getReplenishment() > 10000) {
+                    System.out.println("Сумма не должна превышать 10000");
+                } else {
+                    coinAcceptor.setAmount(coinAcceptor.getAmount() + bankCard.getReplenishment());
+
+                    System.out.printf("Вы успешно пополнили на %s%n", bankCard.getReplenishment());
+                }
+            } else {
+                System.out.println("Пороль должен быть 4 значным!");
+            }
+        } else {
+            System.out.println("Карта номера должна быть 14 значной!");
+        }
     }
 
     private void showActions(UniversalArray<Product> products) {
